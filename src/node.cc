@@ -759,7 +759,7 @@ int InitializeNodeWithArgs(std::vector<std::string>* argv,
 
   }  // g_upstream_node_mode
 
-  NativeModuleEnv::InitializeCodeCache();
+  //NativeModuleEnv::InitializeCodeCache();
 
   // We should set node_is_initialized here instead of in node::Start,
   // otherwise embedders using node::Init to initialize everything will not be
@@ -901,20 +901,20 @@ int Start(int argc, char** argv) {
     // params.external_references.
     std::vector<intptr_t> external_references = {
         reinterpret_cast<intptr_t>(nullptr)};
-    v8::StartupData* blob = NodeMainInstance::GetEmbeddedSnapshotBlob();
+    /*v8::StartupData* blob = NodeMainInstance::GetEmbeddedSnapshotBlob();
     const std::vector<size_t>* indexes =
         NodeMainInstance::GetIsolateDataIndexes();
     if (blob != nullptr) {
       params.external_references = external_references.data();
       params.snapshot_blob = blob;
-    }
+    }*/
 
     NodeMainInstance main_instance(&params,
                                    uv_default_loop(),
                                    per_process::v8_platform.Platform(),
                                    result.args,
                                    result.exec_args,
-                                   indexes);
+                                   /*indexes*/nullptr);
     result.exit_code = main_instance.Run();
   }
 

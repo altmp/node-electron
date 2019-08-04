@@ -1102,7 +1102,11 @@ class Space : public Malloced {
   std::atomic<size_t>* external_backing_store_bytes_;
 
  private:
+#if V8_CC_MSVC && !(defined NDEBUG)
+  static const intptr_t kIdOffset = 10 * kSystemPointerSize;
+#else
   static const intptr_t kIdOffset = 9 * kSystemPointerSize;
+#endif
 
   bool allocation_observers_paused_;
   Heap* heap_;
