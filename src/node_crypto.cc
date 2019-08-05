@@ -5368,9 +5368,9 @@ void DiffieHellman::GenerateKeys(const FunctionCallbackInfo<Value>& args) {
   const int size = BN_num_bytes(pub_key);
   CHECK_GE(size, 0);
   AllocatedBuffer data = env->AllocateManaged(size);
-  // CHECK_EQ(
-  //     1,
-  //     BN_bn2bin_padded(reinterpret_cast<unsigned char*>(data.data()), size, pub_key));
+  CHECK_EQ(size,
+    BN_bn2binpad(
+    pub_key, reinterpret_cast<unsigned char*>(data.data()), size));
   args.GetReturnValue().Set(data.ToBuffer().ToLocalChecked());
 }
 
@@ -5389,9 +5389,9 @@ void DiffieHellman::GetField(const FunctionCallbackInfo<Value>& args,
   const int size = BN_num_bytes(num);
   CHECK_GE(size, 0);
   AllocatedBuffer data = env->AllocateManaged(size);
-  // CHECK_EQ(
-  //     1,
-  //     BN_bn2bin_padded(reinterpret_cast<unsigned char*>(data.data()), size, num));
+  CHECK_EQ(
+      size,
+      BN_bn2binpad(num, reinterpret_cast<unsigned char*>(data.data()), size));
   args.GetReturnValue().Set(data.ToBuffer().ToLocalChecked());
 }
 
@@ -5714,9 +5714,7 @@ void ECDH::GetPrivateKey(const FunctionCallbackInfo<Value>& args) {
 
   const int size = BN_num_bytes(b);
   AllocatedBuffer out = env->AllocateManaged(size);
-  // CHECK_EQ(1, BN_bn2bin_padded(reinterpret_cast<unsigned char*>(out.data()),
-  //                                 size,
-  //                                 b));
+  CHECK_EQ(size, BN_bn2binpad(b, reinterpret_cast<unsigned char*>(out.data()), size));
 
   Local<Object> buf = out.ToBuffer().ToLocalChecked();
   args.GetReturnValue().Set(buf);
