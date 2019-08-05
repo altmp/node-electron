@@ -7,7 +7,7 @@
     'node_use_etw%': 'false',
     'node_no_browser_globals%': 'false',
     'node_use_node_snapshot%': 'false',
-    'node_use_v8_platform%': 'true',
+    'node_use_v8_platform%': 'false',
     'node_use_bundled_v8%': 'true',
     'node_shared%': 'false',
     'force_dynamic_crt%': 0,
