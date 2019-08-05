@@ -264,12 +264,34 @@ void FreeIsolateData(IsolateData* isolate_data) {
   delete isolate_data;
 }
 
+bool BootstrapEnvironment(Environment* env) {
+  if (RunBootstrapping(env).IsEmpty()) {
+    return false;
+  }
+
+  std::vector<Local<String>> parameters = {
+      env->require_string(),
+      FIXED_ONE_BYTE_STRING(env->isolate(), "markBootstrapComplete")};
+  std::vector<Local<Value>> arguments = {
+      env->native_module_require(),
+      env->NewFunctionTemplate(MarkBootstrapComplete)
+          ->GetFunction(env->context())
+          .ToLocalChecked()};
+  if (ExecuteBootstrapper(
+          env, "internal/bootstrap/environment", &parameters, &arguments)
+          .IsEmpty()) {
+    return false;
+  }
+  return true;
+}
+
 Environment* CreateEnvironment(IsolateData* isolate_data,
                                Local<Context> context,
                                int argc,
                                const char* const* argv,
                                int exec_argc,
-                               const char* const* exec_argv) {
+                               const char* const* exec_argv,
+                               bool bootstrap) {
   Isolate* isolate = context->GetIsolate();
   HandleScope handle_scope(isolate);
   Context::Scope context_scope(context);
@@ -286,21 +308,7 @@ Environment* CreateEnvironment(IsolateData* isolate_data,
                                       Environment::kOwnsInspector));
   env->InitializeLibuv(per_process::v8_is_profiling);
   env->ProcessCliArgs(args, exec_args);
-  if (RunBootstrapping(env).IsEmpty()) {
-    return nullptr;
-  }
-
-  std::vector<Local<String>> parameters = {
-      env->require_string(),
-      FIXED_ONE_BYTE_STRING(env->isolate(), "markBootstrapComplete")};
-  std::vector<Local<Value>> arguments = {
-      env->native_module_require(),
-      env->NewFunctionTemplate(MarkBootstrapComplete)
-          ->GetFunction(env->context())
-          .ToLocalChecked()};
-  if (ExecuteBootstrapper(
-          env, "internal/bootstrap/environment", &parameters, &arguments)
-          .IsEmpty()) {
+  if (bootstrap && !BootstrapEnvironment(env)) {
     return nullptr;
   }
   return env;
