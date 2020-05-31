@@ -1,0 +1,80 @@
+name: Build & deploy
+on:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows-release:
+    name: Build windows release
+    runs-on: windows-2019
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Build
+        shell: cmd
+        run: |
+          cd alt-build && call alt-release.bat
+          cd ..
+          mkdir dist
+          copy out\Release\libnode.lib dist
+          copy out\Release\libnode.dll dist
+          copy out\Release\lib\v8_libbase.lib dist
+          copy out\Release\lib\v8_libplatform.lib dist
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: node-windows-release
+          path: ./dist/
+
+  build-windows-debug:
+    name: Build windows debug
+    runs-on: windows-2019
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Build
+        shell: cmd
+        run: |
+          cd alt-build && call alt-debug.bat
+          cd ..
+          mkdir dist
+          copy out\Debug\libnode.lib dist
+          copy out\Debug\libnode.dll dist
+          copy out\Debug\lib\v8_libbase.lib dist
+          copy out\Debug\lib\v8_libplatform.lib dist
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: node-windows-debug
+          path: ./dist/
+
+  build-linux-release:
+    name: Build windows debug
+    runs-on: windows-2019
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Build
+        run: |
+          cd alt-build && bash alt-release.sh
+          cd ..
+          mkdir dist
+          cp ./out/Release/lib.target/libnode.so.72 dist/libnode.so
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: node-linux-release
+          path: ./dist/
