@@ -119,7 +119,7 @@ config("node_features") {
     defines += [ "NODE_HAVE_I18N_SUPPORT=0" ]
   }
   if (node_use_v8_platform) {
-    defines += [ "NODE_USE_V8_PLATFORM=1" ]
+    defines += [ "NODE_USE_V8_PLATFORM=0" ]
   } else {
     defines += [ "NODE_USE_V8_PLATFORM=0" ]
   }

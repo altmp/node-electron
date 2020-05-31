@@ -124,7 +124,8 @@ class WorkerThreadData {
       array_buffer_allocator_(ArrayBufferAllocator::Create()) {
     CHECK_EQ(uv_loop_init(&loop_), 0);
 
-    Isolate* isolate = NewIsolate(array_buffer_allocator_.get(), &loop_);
+    Isolate* isolate =
+        NewIsolate(array_buffer_allocator_.get(), &loop_, w_->platform_);
     CHECK_NOT_NULL(isolate);
 
     {

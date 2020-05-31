@@ -76,7 +76,7 @@
     }],
     [ 'node_use_v8_platform=="true"', {
       'defines': [
-        'NODE_USE_V8_PLATFORM=1',
+        'NODE_USE_V8_PLATFORM=0',
       ],
     }, {
       'defines': [
